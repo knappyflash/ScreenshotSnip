@@ -57,7 +57,7 @@ Partial Class Form1
         ' 
         ' DrawIconTimer
         ' 
-        DrawIconTimer.Interval = 1
+        DrawIconTimer.Interval = 34
         ' 
         ' Form1
         ' 

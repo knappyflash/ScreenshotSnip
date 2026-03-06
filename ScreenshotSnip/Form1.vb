@@ -2,9 +2,11 @@
 
 Public Class Form1
     Private myKeyListener As MyKeyListener = New MyKeyListener
+
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         AddHandler Me.myKeyListener.EscapePressed, AddressOf KeyEscapePressed
         DrawIconTimer.Start()
+        PictureBox1.Image = Me.myIcon
         Me.Icon = Icon
     End Sub
 
@@ -45,35 +47,38 @@ Public Class Form1
     Private myIcon As New Bitmap(256, 256)
     Private myIconLineCounter As Integer = 50
     Private scissorsOpen As Boolean = False
+    Private myPen As New Pen(Brushes.Blue, 10)
+    Private myIconGraphic As Graphics = Graphics.FromImage(Me.myIcon)
+    Private myScissors1 As Image = My.Resources.Resource1.Scissors1
+    Private myScissors2 As Image = My.Resources.Resource1.Scissors2
+
     Private Sub DrawIconTimer_Tick(sender As Object, e As EventArgs) Handles DrawIconTimer.Tick
 
-        Dim myPen As New Pen(Brushes.Blue, 10)
-        Using g As Graphics = Graphics.FromImage(myIcon)
-            g.Clear(Color.White)
 
-            If scissorsOpen Then
-                g.DrawImage(My.Resources.Resource1.Scissors1, 150, 75, 100, 100)
-            Else
-                g.DrawImage(My.Resources.Resource1.Scissors2, 150, 75, 100, 100)
-            End If
+        Me.myIconGraphic.Clear(Color.White)
 
-            For i As Integer = 0 To 50 Step 2
-                g.DrawLine(myPen, (i * 10) + myIconLineCounter, 10, ((i * 10) + 10) + myIconLineCounter, 10)
-                g.DrawLine(myPen, (i * 10) - myIconLineCounter, 245, ((i * 10) + 10) - myIconLineCounter, 245)
-
-                g.DrawLine(myPen, 10, (i * 10) - myIconLineCounter, 10, ((i * 10) + 10) - myIconLineCounter)
-                g.DrawLine(myPen, 245, (i * 10) + myIconLineCounter, 245, ((i * 10) + 10) + myIconLineCounter)
-            Next
-
-        End Using
-
-        myIconLineCounter += 1
-        If myIconLineCounter >= 20 Then
-            myIconLineCounter = 0
-            scissorsOpen = Not scissorsOpen
+        If Me.scissorsOpen Then
+            Me.myIconGraphic.DrawImage(Me.myScissors1, 150, 75, 100, 100)
+        Else
+            Me.myIconGraphic.DrawImage(Me.myScissors2, 150, 75, 100, 100)
         End If
 
-        PictureBox1.Image = myIcon
+        For i As Integer = 0 To 50 Step 2
+            Me.myIconGraphic.DrawLine(Me.myPen, (i * 10) + Me.myIconLineCounter, 10, ((i * 10) + 10) + Me.myIconLineCounter, 10)
+            Me.myIconGraphic.DrawLine(Me.myPen, (i * 10) - Me.myIconLineCounter, 245, ((i * 10) + 10) - Me.myIconLineCounter, 245)
+
+            Me.myIconGraphic.DrawLine(Me.myPen, 10, (i * 10) - Me.myIconLineCounter, 10, ((i * 10) + 10) - Me.myIconLineCounter)
+            Me.myIconGraphic.DrawLine(Me.myPen, 245, (i * 10) + Me.myIconLineCounter, 245, ((i * 10) + 10) + Me.myIconLineCounter)
+        Next
+
+
+        Me.myIconLineCounter += 2
+        If Me.myIconLineCounter >= 20 Then
+            Me.myIconLineCounter = 0
+            Me.scissorsOpen = Not Me.scissorsOpen
+        End If
+
+        PictureBox1.Refresh()
 
     End Sub
 

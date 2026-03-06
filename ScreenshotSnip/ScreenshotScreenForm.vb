@@ -3,11 +3,11 @@
 Public Class ScreenshotScreenForm
 
     Public WindowCaptureBitmap As Bitmap
-    Private DarkBaseBitmap As Bitmap
+    Public DarkBaseBitmap As Bitmap
     Public WindowCaptureBitmapWithSnipArea As Bitmap
+    Public SnipBitmap As Bitmap
 
     Public SnipRect As New Rectangle(0, 0, 1, 1)
-    Public SnipBitmap As Bitmap
     Public SnipStartPosition As Point
     Public SnipEndPosition As Point
 
@@ -19,31 +19,42 @@ Public Class ScreenshotScreenForm
         Dim scr As Screen = Screen.FromHandle(Me.Handle)
         Dim b As Rectangle = scr.Bounds
 
-        If WindowCaptureBitmap IsNot Nothing Then WindowCaptureBitmap.Dispose()
-        If DarkBaseBitmap IsNot Nothing Then DarkBaseBitmap.Dispose()
-        If WindowCaptureBitmapWithSnipArea IsNot Nothing Then WindowCaptureBitmapWithSnipArea.Dispose()
-        If SnipBitmap IsNot Nothing Then SnipBitmap.Dispose()
+        If Me.WindowCaptureBitmap IsNot Nothing Then Me.WindowCaptureBitmap.Dispose()
+        If Me.DarkBaseBitmap IsNot Nothing Then Me.DarkBaseBitmap.Dispose()
+        If Me.WindowCaptureBitmapWithSnipArea IsNot Nothing Then Me.WindowCaptureBitmapWithSnipArea.Dispose()
+        If Me.SnipBitmap IsNot Nothing Then Me.SnipBitmap.Dispose()
 
         WindowCaptureBitmap = New Bitmap(b.Width, b.Height, PixelFormat.Format32bppArgb)
         Using g As Graphics = Graphics.FromImage(WindowCaptureBitmap)
             g.CopyFromScreen(b.X, b.Y, 0, 0, b.Size, CopyPixelOperation.SourceCopy)
         End Using
 
-        DarkBaseBitmap = DarkenBitmapByPercent(WindowCaptureBitmap, 50.0F)
+        Me.DarkBaseBitmap = DarkenBitmapByPercent(Me.WindowCaptureBitmap, 50.0F)
 
-        WindowCaptureBitmapWithSnipArea = CType(DarkBaseBitmap.Clone(), Bitmap)
+        Me.WindowCaptureBitmapWithSnipArea = CType(Me.DarkBaseBitmap.Clone(), Bitmap)
 
         Me.Invalidate()
     End Sub
 
+    Public Sub CloseScreenForm()
+        Me.WindowCaptureBitmap = Nothing
+        Me.DarkBaseBitmap = Nothing
+        Me.WindowCaptureBitmapWithSnipArea = Nothing
+        Me.SnipBitmap = Nothing
+        Me.SnipRect = Nothing
+        Me.SnipStartPosition = Nothing
+        Me.SnipEndPosition = Nothing
+        Me.Close()
+    End Sub
+
     Private Sub ScreenshotScreenForm_Paint(sender As Object, e As PaintEventArgs) Handles Me.Paint
-        If WindowCaptureBitmapWithSnipArea IsNot Nothing Then
-            e.Graphics.DrawImage(WindowCaptureBitmapWithSnipArea, 0, 0)
+        If Me.WindowCaptureBitmapWithSnipArea IsNot Nothing Then
+            e.Graphics.DrawImage(Me.WindowCaptureBitmapWithSnipArea, 0, 0)
         End If
 
-        If SnipRect.Width > 1 AndAlso SnipRect.Height > 1 Then
+        If Me.SnipRect.Width > 1 AndAlso Me.SnipRect.Height > 1 Then
             Using pen As New Pen(Color.DeepSkyBlue, 2)
-                e.Graphics.DrawRectangle(pen, SnipRect)
+                e.Graphics.DrawRectangle(pen, Me.SnipRect)
             End Using
         End If
     End Sub
@@ -77,60 +88,61 @@ Public Class ScreenshotScreenForm
     End Function
 
     Private Sub ScreenshotScreenForm_MouseDown(sender As Object, e As MouseEventArgs) Handles Me.MouseDown
-        SnipStartPosition = Me.PointToClient(Cursor.Position)
-        SnipEndPosition = SnipStartPosition
+        Me.SnipStartPosition = Me.PointToClient(Cursor.Position)
+        Me.SnipEndPosition = Me.SnipStartPosition
         Timer1.Start()
     End Sub
 
     Private Sub ScreenshotScreenForm_MouseUp(sender As Object, e As MouseEventArgs) Handles Me.MouseUp
         Timer1.Stop()
 
-        SnipRect = NormalizeRect(SnipStartPosition, SnipEndPosition)
-        SnipRect.Intersect(New Rectangle(Point.Empty, WindowCaptureBitmap.Size))
-        If SnipRect.Width > 0 AndAlso SnipRect.Height > 0 Then
-            If SnipBitmap IsNot Nothing Then SnipBitmap.Dispose()
-            SnipBitmap = WindowCaptureBitmap.Clone(SnipRect, PixelFormat.Format32bppArgb)
+        Me.SnipRect = NormalizeRect(Me.SnipStartPosition, Me.SnipEndPosition)
+        Me.SnipRect.Intersect(New Rectangle(Point.Empty, Me.WindowCaptureBitmap.Size))
+        If Me.SnipRect.Width > 0 AndAlso Me.SnipRect.Height > 0 Then
+            If Me.SnipBitmap IsNot Nothing Then Me.SnipBitmap.Dispose()
+            Me.SnipBitmap = Me.WindowCaptureBitmap.Clone(Me.SnipRect, PixelFormat.Format32bppArgb)
         End If
 
-        If SnipStartPosition = SnipEndPosition Then
-            WindowCaptureBitmap.Save("screen_snip.png", ImageFormat.Png)
-            Form1.PictureBox1.Image = WindowCaptureBitmap
+        If Me.SnipStartPosition = Me.SnipEndPosition Then
+            Me.WindowCaptureBitmap.Save("screen_snip.png", ImageFormat.Png)
+            Form1.PictureBox1.Image = Me.WindowCaptureBitmap
         Else
-            SnipBitmap.Save("screen_snip.png", ImageFormat.Png)
-            Form1.PictureBox1.Image = SnipBitmap
+            Me.SnipBitmap.Save("screen_snip.png", ImageFormat.Png)
+            Form1.PictureBox1.Image = Me.SnipBitmap
         End If
 
-        Me.Close()
+        Me.CloseScreenForm()
+
     End Sub
 
     Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
-        SnipEndPosition = Me.PointToClient(Cursor.Position)
+        Me.SnipEndPosition = Me.PointToClient(Cursor.Position)
 
-        SnipRect = NormalizeRect(SnipStartPosition, SnipEndPosition)
+        Me.SnipRect = NormalizeRect(Me.SnipStartPosition, Me.SnipEndPosition)
 
-        UpdateSnipOverlay()
+        Me.UpdateSnipOverlay()
         Me.Invalidate()
     End Sub
 
     Private Sub UpdateSnipOverlay()
-        If WindowCaptureBitmap Is Nothing OrElse DarkBaseBitmap Is Nothing Then Return
+        If Me.WindowCaptureBitmap Is Nothing OrElse Me.DarkBaseBitmap Is Nothing Then Return
 
-        Dim r As Rectangle = SnipRect
-        r.Intersect(New Rectangle(Point.Empty, WindowCaptureBitmap.Size))
+        Dim r As Rectangle = Me.SnipRect
+        r.Intersect(New Rectangle(Point.Empty, Me.WindowCaptureBitmap.Size))
         If r.Width <= 0 OrElse r.Height <= 0 Then
-            If WindowCaptureBitmapWithSnipArea IsNot Nothing Then WindowCaptureBitmapWithSnipArea.Dispose()
-            WindowCaptureBitmapWithSnipArea = CType(DarkBaseBitmap.Clone(), Bitmap)
+            If Me.WindowCaptureBitmapWithSnipArea IsNot Nothing Then Me.WindowCaptureBitmapWithSnipArea.Dispose()
+            Me.WindowCaptureBitmapWithSnipArea = CType(Me.DarkBaseBitmap.Clone(), Bitmap)
             Return
         End If
 
-        If WindowCaptureBitmapWithSnipArea IsNot Nothing Then WindowCaptureBitmapWithSnipArea.Dispose()
-        WindowCaptureBitmapWithSnipArea = CType(DarkBaseBitmap.Clone(), Bitmap)
+        If Me.WindowCaptureBitmapWithSnipArea IsNot Nothing Then Me.WindowCaptureBitmapWithSnipArea.Dispose()
+        Me.WindowCaptureBitmapWithSnipArea = CType(Me.DarkBaseBitmap.Clone(), Bitmap)
 
-        If SnipBitmap IsNot Nothing Then SnipBitmap.Dispose()
-        SnipBitmap = WindowCaptureBitmap.Clone(r, PixelFormat.Format32bppArgb)
+        If Me.SnipBitmap IsNot Nothing Then Me.SnipBitmap.Dispose()
+        Me.SnipBitmap = Me.WindowCaptureBitmap.Clone(r, PixelFormat.Format32bppArgb)
 
-        Using g As Graphics = Graphics.FromImage(WindowCaptureBitmapWithSnipArea)
-            g.DrawImage(SnipBitmap, r.Location)
+        Using g As Graphics = Graphics.FromImage(Me.WindowCaptureBitmapWithSnipArea)
+            g.DrawImage(Me.SnipBitmap, r.Location)
         End Using
     End Sub
 
@@ -145,5 +157,6 @@ Public Class ScreenshotScreenForm
 
         Return New Rectangle(x, y, w, h)
     End Function
+
 
 End Class
