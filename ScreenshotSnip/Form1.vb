@@ -4,7 +4,12 @@ Public Class Form1
     Private myKeyListener As MyKeyListener = New MyKeyListener
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+        OpenFolderLocationLabel.ForeColor = Color.FromArgb(100, 100, 255)
+
         AddHandler Me.myKeyListener.EscapePressed, AddressOf KeyEscapePressed
+        AddHandler Me.myKeyListener.PrintScreenPressed, AddressOf KeyPrintScreenPressed
+
         DrawIconTimer.Start()
         PictureBox1.Image = Me.myIcon
         Me.Icon = Icon
@@ -36,6 +41,10 @@ Public Class Form1
     Private Sub KeyEscapePressed()
         Me.Timer1.Stop()
         ScreenshotScreenForm.Close()
+    End Sub
+
+    Private Sub KeyPrintScreenPressed()
+        TakeSnipButton.PerformClick()
     End Sub
 
     Private Sub Form1_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
@@ -80,6 +89,23 @@ Public Class Form1
 
         PictureBox1.Refresh()
 
+    End Sub
+
+    Private Sub OpenFolderLocationLabel_MouseEnter(sender As Object, e As EventArgs) Handles OpenFolderLocationLabel.MouseEnter
+        OpenFolderLocationLabel.ForeColor = Color.FromArgb(200, 200, 255)
+    End Sub
+
+    Private Sub OpenFolderLocationLabel_MouseLeave(sender As Object, e As EventArgs) Handles OpenFolderLocationLabel.MouseLeave
+        OpenFolderLocationLabel.ForeColor = Color.FromArgb(100, 100, 255)
+    End Sub
+
+    Private Sub OpenFolderLocationLabel_MouseDown(sender As Object, e As MouseEventArgs) Handles OpenFolderLocationLabel.MouseDown
+        OpenFolderLocationLabel.ForeColor = Color.FromArgb(0, 0, 255)
+    End Sub
+
+    Private Sub OpenFolderLocationLabel_MouseUp(sender As Object, e As MouseEventArgs) Handles OpenFolderLocationLabel.MouseUp
+        OpenFolderLocationLabel.ForeColor = Color.FromArgb(100, 100, 255)
+        Process.Start("explorer.exe", Application.StartupPath)
     End Sub
 
 End Class

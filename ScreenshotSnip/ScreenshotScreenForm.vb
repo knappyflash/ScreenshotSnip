@@ -111,6 +111,8 @@ Public Class ScreenshotScreenForm
             Form1.PictureBox1.Image = Me.SnipBitmap
         End If
 
+        Clipboard.SetImage(Form1.PictureBox1.Image)
+
         Me.CloseScreenForm()
 
     End Sub

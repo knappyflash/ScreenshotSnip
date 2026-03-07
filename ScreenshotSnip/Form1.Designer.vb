@@ -28,6 +28,7 @@ Partial Class Form1
         TakeSnipButton = New Button()
         Timer1 = New Timer(components)
         DrawIconTimer = New Timer(components)
+        OpenFolderLocationLabel = New Label()
         CType(PictureBox1, ComponentModel.ISupportInitialize).BeginInit()
         SuspendLayout()
         ' 
@@ -44,11 +45,12 @@ Partial Class Form1
         ' 
         ' TakeSnipButton
         ' 
+        TakeSnipButton.Cursor = Cursors.Hand
         TakeSnipButton.Location = New Point(532, 12)
         TakeSnipButton.Name = "TakeSnipButton"
         TakeSnipButton.Size = New Size(116, 23)
         TakeSnipButton.TabIndex = 1
-        TakeSnipButton.Text = "Take Snip"
+        TakeSnipButton.Text = "Print Screen"
         TakeSnipButton.UseVisualStyleBackColor = True
         ' 
         ' Timer1
@@ -59,11 +61,23 @@ Partial Class Form1
         ' 
         DrawIconTimer.Interval = 34
         ' 
+        ' OpenFolderLocationLabel
+        ' 
+        OpenFolderLocationLabel.AutoSize = True
+        OpenFolderLocationLabel.Cursor = Cursors.Hand
+        OpenFolderLocationLabel.Font = New Font("Segoe UI", 9F, FontStyle.Underline, GraphicsUnit.Point, CByte(0))
+        OpenFolderLocationLabel.Location = New Point(12, 9)
+        OpenFolderLocationLabel.Name = "OpenFolderLocationLabel"
+        OpenFolderLocationLabel.Size = New Size(121, 15)
+        OpenFolderLocationLabel.TabIndex = 2
+        OpenFolderLocationLabel.Text = "Open Folder Location"
+        ' 
         ' Form1
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(660, 305)
+        Controls.Add(OpenFolderLocationLabel)
         Controls.Add(TakeSnipButton)
         Controls.Add(PictureBox1)
         DoubleBuffered = True
@@ -75,11 +89,13 @@ Partial Class Form1
         TopMost = True
         CType(PictureBox1, ComponentModel.ISupportInitialize).EndInit()
         ResumeLayout(False)
+        PerformLayout()
     End Sub
 
     Friend WithEvents PictureBox1 As PictureBox
     Friend WithEvents TakeSnipButton As Button
     Friend WithEvents Timer1 As Timer
     Friend WithEvents DrawIconTimer As Timer
+    Friend WithEvents OpenFolderLocationLabel As Label
 
 End Class

@@ -5,6 +5,7 @@ Public Class MyKeyListener
     Implements IDisposable
 
     Public Event EscapePressed()
+    Public Event PrintScreenPressed()
 
     Private Const WH_KEYBOARD_LL As Integer = 13
     Private Const HC_ACTION As Integer = 0
@@ -41,7 +42,9 @@ Public Class MyKeyListener
 
                 If CType(data.vkCode, Keys) = Keys.Escape Then
                     RaiseEvent EscapePressed()
-
+                    Return CType(1, IntPtr)
+                ElseIf CType(data.vkCode, Keys) = Keys.PrintScreen Then
+                    RaiseEvent PrintScreenPressed()
                     Return CType(1, IntPtr)
                 End If
             End If
