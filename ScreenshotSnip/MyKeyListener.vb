@@ -42,7 +42,7 @@ Public Class MyKeyListener
 
                 If CType(data.vkCode, Keys) = Keys.Escape Then
                     RaiseEvent EscapePressed()
-                    Return CType(1, IntPtr)
+                    'Return CType(1, IntPtr)
                 ElseIf CType(data.vkCode, Keys) = Keys.PrintScreen Then
                     RaiseEvent PrintScreenPressed()
                     Return CType(1, IntPtr)
