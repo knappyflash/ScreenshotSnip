@@ -104,10 +104,10 @@ Public Class ScreenshotScreenForm
         End If
 
         If Me.SnipStartPosition = Me.SnipEndPosition Then
-            Me.WindowCaptureBitmap.Save("screen_snip.png", ImageFormat.Png)
+            Me.WindowCaptureBitmap.Save($"{Application.StartupPath}\screen_snip.png", ImageFormat.Png)
             Form1.PictureBox1.Image = Me.WindowCaptureBitmap
         Else
-            Me.SnipBitmap.Save("screen_snip.png", ImageFormat.Png)
+            Me.SnipBitmap.Save($"{Application.StartupPath}\screen_snip.png", ImageFormat.Png)
             Form1.PictureBox1.Image = Me.SnipBitmap
         End If
 
